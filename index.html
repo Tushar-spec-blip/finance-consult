@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>moneydhan - Personal Financial Health & FIRE Planning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-brand-600 font-bold text-white flex items-center justify-center">MD</div>
+                <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-teal-500">moneydhan</h1>
+            </div>
+            <div class="text-sm text-slate-500 font-medium">Free & Anonymous</div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="app-container">
+        
+        <!-- Progress Bar -->
+        <div class="mb-8" id="progress-container">
+            <div class="flex justify-between items-end mb-2">
+                <h2 class="text-xs font-semibold text-brand-600 uppercase tracking-wider" id="step-title">Step 1 — Income & Expenses</h2>
+                <span class="text-xs font-medium text-slate-400" id="step-indicator">1 / 3</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-brand-500 h-1.5 rounded-full transition-all duration-500 ease-out" id="progress-bar" style="width: 33%"></div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 1: INCOME & EXPENSES ================= -->
+        <section id="page-1" class="page-section slide-in block">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mb-6">
+                <!-- Header Component -->
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Income & Cash Flow</h2>
+                        <p class="text-slate-500 text-sm mt-1">Let's start by understanding what comes in and what goes out.</p>
+                    </div>
+                    <!-- Live Surplus Widget -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 min-w-[200px] flex flex-col items-end">
+                        <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Monthly Surplus</span>
+                        <div class="text-2xl font-bold text-slate-800 mt-1" id="live-surplus-display">₹0</div>
+                    </div>
+                </div>
+
+                <form id="form-page-1" class="space-y-8">
+                    <!-- Income Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b border-slate-100"><i class="fa-solid fa-wallet text-brand-500 mr-2"></i> Monthly Income</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="input-group">
+                                <label>Gross Income (Primary) <span class="text-red-500">*</span> <i class="fa-solid fa-circle-info tooltip" title="Your main salary or business income after tax."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="income_gross" required min="1" max="10000000" class="pl-8 w-full rounded-lg border-slate-300 border focus:border-brand-500 focus:ring-2 focus:ring-brand-200 py-2.5 transition-all" placeholder="100000">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Other Monthly Income <i class="fa-solid fa-circle-info tooltip" title="Rental income, side hustle, interest, etc."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="income_other" min="0" class="pl-8 w-full rounded-lg border-slate-300 border focus:border-brand-500 focus:ring-2 focus:ring-brand-200 py-2.5 transition-all" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expenses Section -->
+                    <div>
+                        <div class="flex justify-between items-end mb-4 pb-2 border-b border-slate-100">
+                            <h3 class="text-lg font-semibold text-slate-700"><i class="fa-solid fa-receipt text-orange-500 mr-2"></i> Monthly Expenses</h3>
+                            <span class="text-sm font-semibold text-slate-600">Total: <span id="live-expense-total" class="text-orange-600">₹0</span></span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Needs -->
+                            <div class="input-group">
+                                <label>Rent / Housing <i class="fa-solid fa-circle-info tooltip" title="0 if you own a home without loan, or live rent-free. Don't add home loan EMI here."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_rent" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Food & Groceries <i class="fa-solid fa-circle-info tooltip" title="Include dining out, Swiggy/Zomato, and daily groceries."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_food" min="1" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Fuel & Transport <i class="fa-solid fa-circle-info tooltip" title="Petrol, Uber, Metro passes."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_fuel" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Utilities & Internet <i class="fa-solid fa-circle-info tooltip" title="Electricity, water, mobile, broadband."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_utils" min="1" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Medical Expenses <i class="fa-solid fa-circle-info tooltip" title="Monthly average for medicines, doctor visits not covered by insurance."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_medical" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            
+                            <!-- Lifestyle / Optional -->
+                            <div class="input-group">
+                                <label>Total Loan EMIs <i class="fa-solid fa-circle-info tooltip" title="Sum of home, car, personal, and credit card minimum payments."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_emi" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Domestic Help <i class="fa-solid fa-circle-info tooltip" title="Maid, cook, driver monthly wages."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_maid" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Entertainment & OTT <i class="fa-solid fa-circle-info tooltip" title="Netflix, movies, events."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_ent" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Shopping & Clothing <i class="fa-solid fa-circle-info tooltip" title="Monthly average on clothes, accessories, amazon."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_shop" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Miscellaneous <i class="fa-solid fa-circle-info tooltip" title="Any other recurring monthly cash outflows."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="exp_misc" min="0" class="expense-input pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Warning Banner -->
+                    <div id="deficit-warning" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+                        <i class="fa-solid fa-triangle-exclamation mt-1 mr-3 text-red-500"></i>
+                        <div>
+                            <h4 class="font-bold text-sm">Negative Cash Flow Detected</h4>
+                            <p class="text-xs mt-1">Your total monthly expenses exceed your income. You can still proceed, but this is a critical risk area.</p>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" id="btn-next-1" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-8 rounded-xl shadow-md transition-all flex items-center gap-2">
+                    Save & Continue <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: PROTECTION & DEBT ================= -->
+        <section id="page-2" class="page-section slide-in hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mb-6">
+                 <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Protection, Savings & Growth</h2>
+                    <p class="text-slate-500 text-sm mt-1">Provide your insurance, asset, debt details and future RETIREMENT goals.</p>
+                </div>
+
+                <form id="form-page-2" class="space-y-8">
+                    
+                    <!-- Protection Layer -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b border-slate-100"><i class="fa-solid fa-shield-heart text-blue-500 mr-2"></i> Protection Layer (Insurance)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                            <div class="input-group">
+                                <label>Health Insurance Premium (Annual) </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="ins_health_prem" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Health Cover Amount </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="ins_health_cover" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="500000">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Life/Term Insurance Premium (Annual)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="ins_life_prem" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Life Cover Amount (Death Benefit)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="ins_life_cover" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Savings & Corpus -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b border-slate-100"><i class="fa-solid fa-piggy-bank text-emerald-500 mr-2"></i> Savings & Accumulation</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="input-group">
+                                <label>Emergency Fund Balance <i class="fa-solid fa-circle-info tooltip" title="Liquid cash in FD or savings account."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="sav_emergency" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Monthly Investments (SIPs etc.) </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="sav_sip" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="input-group md:col-span-2">
+                                <label>Total Invesment Corpus <i class="fa-solid fa-circle-info tooltip" title="Current value of MFs, Stocks, PF, NPS."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="sav_corpus" min="0" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5 text-lg font-semibold text-slate-700" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liabilities -->
+                    <div>
+                        <div class="flex justify-between items-end mb-4 pb-2 border-b border-slate-100">
+                            <h3 class="text-lg font-semibold text-slate-700"><i class="fa-solid fa-hand-holding-dollar text-red-500 mr-2"></i> Debts & Liabilities</h3>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <p class="text-sm text-slate-500 mb-4">Add your outstanding debts (Home Loan, Car, Credit Cards). Do NOT include EMI amount here, just Principal.</p>
+                            
+                            <div id="debt-list" class="space-y-4">
+                                <!-- Debt items will be injected here via JS -->
+                            </div>
+                            
+                            <button type="button" id="btn-add-debt" class="mt-4 text-brand-600 hover:text-brand-700 text-sm font-semibold flex items-center gap-1 transition-colors">
+                                <i class="fa-solid fa-plus-circle"></i> Add a Debt Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FIRE Parameters -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b border-slate-100"><i class="fa-solid fa-fire text-orange-500 mr-2"></i> FIRE Parameters (Early Retirement)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-gradient-to-br from-orange-50 to-brand-50 p-5 rounded-xl border border-orange-100">
+                            <div class="input-group">
+                                <label>Current Age </label>
+                                <input type="number" id="fire_age" min="18" max="70" class="w-full rounded-lg border border-slate-300 py-2.5 px-3" placeholder="30">
+                            </div>
+                            <div class="input-group">
+                                <label>Target Retirement Age </label>
+                                <input type="number" id="fire_target_age" min="18" max="80" class="w-full rounded-lg border border-slate-300 py-2.5 px-3" placeholder="50">
+                            </div>
+                            <div class="input-group">
+                                <label>Desired Monthly Ret. Income <i class="fa-solid fa-circle-info tooltip" title="In today's ₹ value."></i></label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">₹</span>
+                                    <input type="number" id="fire_income" min="1" class="pl-8 w-full rounded-lg border border-slate-300 py-2.5" placeholder="100000">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Expected ROI (%) </label>
+                                <div class="relative">
+                                    <input type="number" id="fire_roi" min="1" max="30" step="0.5" value="12" class="w-full rounded-lg border border-slate-300 py-2.5 px-3">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 font-medium">%</span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Inflation Rate (%)</label>
+                                <div class="relative">
+                                    <input type="number" id="fire_inf" min="1" max="15" step="0.5" value="6" class="w-full rounded-lg border border-slate-300 py-2.5 px-3">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 font-medium">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="flex justify-between">
+                <button type="button" id="btn-back-2" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-8 rounded-xl border border-slate-200 shadow-sm transition-all">
+                    Back
+                </button>
+                <button type="button" id="btn-submit" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow-xl transition-transform hover:scale-105 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-400"></i> Calculate My Score
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: RESULTS DASHBOARD ================= -->
+        <section id="page-3" class="page-section slide-in hidden">
+            
+            <!-- Dashboard Header Actions -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500">Your Financial Blueprint</h2>
+                    <p class="text-slate-500 mt-1">Personalised analysis based on your inputs.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="btn-edit" class="bg-white border text-sm border-slate-200 text-slate-600 px-4 py-2 rounded-lg hover:bg-slate-50 font-medium transition-colors">
+                        <i class="fa-solid fa-pen mr-1"></i> Edit Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Main Score Card -->
+                <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="absolute top-0 w-full h-2" id="score-band-accent" style="background-color: #22c55e;"></div>
+                    <h3 class="text-lg text-slate-600 font-semibold mb-4 text-center">Financial Health Score</h3>
+                    <!-- Gauge Visualization Container -->
+                    <div class="relative w-48 h-48 flex items-center justify-center">
+                        <canvas id="gaugeChart" width="200" height="200"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center mt-6">
+                            <span class="text-5xl font-black text-slate-800" id="final-score-val">0</span>
+                            <span class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Out of 100</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 px-4 py-1.5 rounded-full text-sm font-bold border" id="score-badge">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Radar Chart -->
+                <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-6 lg:col-span-2 flex flex-col">
+                    <h3 class="text-lg text-slate-700 font-semibold mb-2">Score Components</h3>
+                    <p class="text-sm text-slate-500 mb-4">Breakdown of the 6 pillars driving your final score.</p>
+                    <div class="flex-grow relative h-[250px] w-full flex items-center justify-center">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg text-slate-700 font-semibold mb-4">Expense Breakdown</h3>
+                    <div class="h-[250px]">
+                        <canvas id="donutChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg text-slate-700 font-semibold mb-4">Monthly Cash Flow</h3>
+                    <div class="h-[250px]">
+                        <canvas id="waterfallChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIRE Calculator Module -->
+            <div class="bg-slate-900 rounded-3xl p-6 md:p-8 text-white mb-8 border border-slate-800 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-20 -mt-20"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500 rounded-full blur-3xl opacity-20 -ml-20 -mb-20"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold mb-2 flex items-center gap-3 relative z-10">
+                    <i class="fa-solid fa-fire text-orange-500"></i> F.I.R.E Projection
+                </h2>
+                <p class="text-slate-400 mb-8 max-w-2xl relative z-10">Based on your target of ₹<span id="fire-tv-need">0</span>/mo at age <span id="fire-tv-age">0</span> with <span id="fire-tv-inf">0</span>% inflation.</p>
+
+                <!-- FIRE STATS CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 relative z-10">
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10">
+                        <div class="text-slate-400 text-xs font-semibold uppercase mb-1">Required FIRE Corpus</div>
+                        <div class="text-2xl font-bold text-white tracking-tight" id="card-fire-req">₹0</div>
+                        <div class="text-xs text-brand-400 mt-2 font-medium" id="card-fire-monthly">(Yielding ₹0/mo safely)</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10">
+                        <div class="text-slate-400 text-xs font-semibold uppercase mb-1">Projected Accumulation</div>
+                        <div class="text-2xl font-bold text-white tracking-tight" id="card-fire-proj">₹0</div>
+                        <div class="text-xs text-slate-400 mt-2 font-medium">At your current SIP of ₹<span id="fire-display-sip">0</span>/mo</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10" id="card-fire-gap-wrapper">
+                        <div class="text-slate-400 text-xs font-semibold uppercase mb-1">Status / Shortfall</div>
+                        <div class="text-2xl font-bold text-red-400 tracking-tight" id="card-fire-gap">₹0 GAP</div>
+                        <div class="text-xs text-slate-300 mt-2 font-medium" id="card-fire-action">Need ₹0/mo extra SIP</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 rounded-xl p-4 md:p-6 border border-slate-700 relative z-10">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-semibold">Wealth Trajectory</h4>
+                        <div class="text-sm border border-slate-600 rounded-lg px-3 py-1 bg-slate-800 text-brand-400 font-medium">
+                            Earliest FIRE Age: <span id="fire-earliest-age">--</span>
+                        </div>
+                    </div>
+                    <!-- SIP Simulator Slider -->
+                    <div class="mb-6 bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+                        <label class="flex justify-between text-sm font-medium mb-2">
+                            <span class="text-slate-300">Simulate Monthly Investment (SIP)</span>
+                            <span class="text-brand-400 font-bold">₹<span id="slider-sip-val">0</span></span>
+                        </label>
+                        <input type="range" id="sip-simulator-slider" min="1000" max="500000" step="1000" class="w-full accent-brand-500 cursor-ew-resize">
+                    </div>
+                    <div class="h-[300px] w-full">
+                        <canvas id="fireChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SWOT Matrix -->
+            <div class="mb-4">
+                 <h2 class="text-2xl font-bold text-slate-800 mb-1">Financial SWOT Analysis</h2>
+                 <p class="text-slate-500 mb-6">Actionable insights automatically generated from your profile.</p>
+                 
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <!-- Strengths -->
+                     <div class="bg-green-50 border border-green-200 rounded-2xl p-5 shadow-sm">
+                         <div class="flex items-center gap-2 mb-3 text-green-700">
+                             <i class="fa-solid fa-dumbbell text-xl"></i>
+                             <h3 class="font-bold text-lg">Strengths</h3>
+                         </div>
+                         <ul class="text-sm text-green-900 space-y-2 list-disc pl-4 marker:text-green-500" id="swot-s">
+                             <!-- dynamic -->
+                         </ul>
+                     </div>
+                     
+                     <!-- Weaknesses -->
+                     <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5 shadow-sm">
+                         <div class="flex items-center gap-2 mb-3 text-orange-700">
+                             <i class="fa-solid fa-link-slash text-xl"></i>
+                             <h3 class="font-bold text-lg">Weaknesses</h3>
+                         </div>
+                         <ul class="text-sm text-orange-900 space-y-2 list-disc pl-4 marker:text-orange-500" id="swot-w">
+                            <!-- dynamic -->
+                         </ul>
+                     </div>
+                     
+                     <!-- Opportunities -->
+                     <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
+                         <div class="flex items-center gap-2 mb-3 text-blue-700">
+                             <i class="fa-solid fa-lightbulb text-xl"></i>
+                             <h3 class="font-bold text-lg">Opportunities</h3>
+                         </div>
+                         <ul class="text-sm text-blue-900 space-y-2 list-disc pl-4 marker:text-blue-500" id="swot-o">
+                            <!-- dynamic -->
+                         </ul>
+                     </div>
+                     
+                     <!-- Threats -->
+                     <div class="bg-red-50 border border-red-200 rounded-2xl p-5 shadow-sm">
+                         <div class="flex items-center gap-2 mb-3 text-red-700">
+                             <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                             <h3 class="font-bold text-lg">Threats</h3>
+                         </div>
+                         <ul class="text-sm text-red-900 space-y-2 list-disc pl-4 marker:text-red-500" id="swot-t">
+                            <!-- dynamic -->
+                         </ul>
+                     </div>
+                 </div>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="flex justify-center mt-10 gap-4 border-t border-slate-200 pt-8 pb-12">
+                 <button onClick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center gap-2">
+                     <i class="fa-solid fa-file-pdf"></i> Download PDF
+                 </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JS Scripts -->
+    <script src="store.js"></script>
+    <script src="scoringEngine.js"></script>
+    <script src="fireCalculator.js"></script>
+    <script src="swotEngine.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+/* Custom Animations and Overrides */
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tooltip standard CSS */
+.tooltip {
+    cursor: help;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+}
+.tooltip:hover {
+    color: #475569;
+}
+
+/* Input group styling */
+.input-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input:not([type="checkbox"]) {
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Slide in animation for pages */
+.slide-in {
+    animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Print Specific CSS */
+@media print {
+    body {
+        background-color: white !important;
+    }
+    nav, #progress-container, button {
+        display: none !important;
+    }
+    .page-section {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    #page-1, #page-2 {
+        display: none !important; /* Only print dashboard */
+    }
+    #page-3 {
+        display: block !important;
+    }
+}

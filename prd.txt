@@ -1,0 +1,156 @@
+
+PRODUCT REQUIREMENTS DOCUMENT
+FinScore360
+
+Personal Financial Health & FIRE Planning Platform
+
+
+
+
+1. Executive Overview
+FinScore360 is a web-based personal financial consulting platform that guides users through a structured two-page data collection workflow, evaluates their financial health using a proprietary scoring algorithm, provides a personalised FIRE (Financial Independence, Retire Early) calculator, and presents a SWOT-style financial profile — all within a clean, interactive dashboard.
+
+1.1 Problem Statement
+Most Indians lack access to affordable financial advisory services. Existing tools are either too generic (basic budgeting apps) or too expensive (private wealth management). There is a significant gap for a platform that collects comprehensive income, expense, insurance, debt, and investment data, scores overall financial health, and helps users plan their path to financial independence.
+
+1.2 Product Goals
+Democratise financial analysis — free, instant, personalised insights for all income levels.
+Collect structured data across spending, protection, and wealth-building categories.
+Compute a meaningful Financial Health Score (0–100) with visual breakdown.
+Project a FIRE date and corpus requirement based on user inputs.
+Surface actionable SWOT analysis unique to the user's financial profile.
+
+1.3 Target Users
+Working professionals aged 25–55 with monthly income between ₹30,000 – ₹5,00,000.
+First-time financial planners who want a starting point.
+Individuals exploring early retirement or financial independence.
+Independent Financial Advisors (IFAs) who onboard clients digitally.
+
+1.4 Success Metrics
+
+2. Data Collection — Page 1: Income & Monthly Expenses
+Page 1 is the entry point. It collects the user's income sources and all major recurring monthly expenses. The form is divided into two sub-sections: Income and Expenses. A live 'Monthly Surplus/Deficit' counter updates as the user types.
+
+2.1 Form Layout & UX Principles
+Single-column layout on mobile; two-column grid on desktop for expense fields.
+All currency inputs default to ₹ (INR). Localisation for USD / GBP may be added in v2.
+Inline contextual tooltips (ℹ️) explain each field with a one-line example.
+Progress bar at top showing 'Step 1 of 2 — Income & Expenses'.
+'Save & Continue' CTA is sticky at the bottom. Disabled until required fields are filled.
+Auto-save to localStorage every 15 seconds to prevent data loss.
+
+2.2 Input Fields Specification
+
+2.3 Derived Calculations on Page 1
+
+2.4 Validation & Error Handling
+Required fields: Income, Rent, Food, Fuel, Medical, Internet, EMI — cannot proceed without these.
+If Total Expenses > Total Income: display amber warning banner, do NOT block submission.
+Numeric-only inputs — reject alphabets and special characters with inline red error text.
+Maximum field value cap: ₹99,99,999 per field to prevent data-entry mistakes.
+
+3. Data Collection — Page 2: Protection, Savings & Debt
+Page 2 collects insurance coverage details, emergency fund status, investment corpus, debt breakdown, and retirement planning parameters. This page feeds the FIRE Calculator and SWOT Analysis in addition to the Financial Health Score.
+
+3.1 Form Sections
+A) Protection Layer (Insurance)
+Collects health and life insurance details. The system cross-references the coverage amount with income to compute the 'Protection Score' sub-component.
+
+B) Emergency Fund & Savings
+Collects current liquid emergency reserves and total investment corpus. The system benchmarks emergency fund against monthly expenses (target: 6 months).
+
+C) Debt Details (Multi-Entry)
+Users can add up to 5 debt entries (home loan, car loan, personal loan, credit card, education). Each entry collects Principal, Interest Rate, and Tenure. The system computes Debt-to-Income Ratio and Total Interest Liability.
+
+D) FIRE Parameters
+Current age, target retirement age, desired monthly retirement income, expected ROI, and inflation rate. These feed exclusively into the FIRE Calculator.
+
+3.2 Input Fields Specification
+
+3.3 Derived Calculations on Page 2
+
+4. Financial Health Score Engine
+After the user completes both pages and submits, the platform computes a Financial Health Score (FHS) on a scale of 0–100. The score is displayed on a results dashboard with a radial gauge chart and a radar chart showing six sub-component scores.
+
+4.1 Scoring Model — Components & Weights
+
+4.2 Score Bands & Interpretation
+
+4.3 Charts & Visualisations
+Chart 1: Radial / Gauge Chart
+Large radial gauge displaying the overall FHS (0–100) with animated fill from 0 to the score on page load. Color interpolates from red to green based on band. Score number displayed in center with band label below.
+
+Chart 2: Radar / Spider Chart
+Six-axis radar chart mapping all scoring sub-components. Filled polygon in primary blue with opacity 0.4. Hover tooltip shows raw sub-score / max. Benchmark overlay (ideal profile at 100%) shown in dashed grey.
+
+Chart 3: Expense Breakdown Donut
+Donut chart showing proportional breakdown of all expense categories from Page 1. Interactive — click a segment to see the ₹ amount and % of income. Segments colour-coded by category type.
+
+Chart 4: Net Worth Waterfall Bar
+Horizontal bar showing: Total Income → Expenses → EMI → Savings → Net monthly surplus. Renders left-to-right with colour coding for deductions (red) and additions (green).
+
+5. FIRE Calculator
+The FIRE (Financial Independence, Retire Early) Calculator uses the user's retirement parameters from Page 2 to compute: the required retirement corpus, projected FIRE date, monthly investment required to hit the goal, and a year-by-year wealth accumulation chart.
+
+5.1 Core Formulas
+
+5.2 FIRE Calculator Output Cards
+
+5.3 FIRE Projection Chart
+An interactive line chart plots two trajectories year-by-year from current age to target retirement age:
+Line 1 (Current Path): Projected corpus growth at current SIP + existing corpus.
+Line 2 (FIRE Target): The required corpus value in each year (sloped to show target).
+The intersection point (if any) is highlighted as the 'Earliest FIRE Date'.
+A vertical dashed line at 'Target Retirement Age' is shown for reference.
+Hover tooltip shows year, projected corpus, FIRE target corpus, and gap/surplus.
+Slider to adjust SIP amount dynamically re-renders the chart in real time.
+
+6. Financial SWOT Analysis
+After scoring and the FIRE Calculator, the platform generates a personalised SWOT analysis. Unlike a generic report, each bullet is dynamically derived from the user's actual inputs and score sub-components. The SWOT is displayed in a 2×2 quadrant card layout.
+
+6.1 SWOT Generation Rules
+
+6.2 SWOT UI Design
+2×2 quadrant card layout: Strengths (top-left, green), Weaknesses (top-right, orange), Opportunities (bottom-left, blue), Threats (bottom-right, red).
+Each quadrant shows 2–5 dynamic bullet points derived from user data.
+'Download Report as PDF' button available below the SWOT section.
+'Share via WhatsApp / Email' CTA to share the score card (anonymised summary).
+'Consult a Financial Advisor' CTA linked to a lead-capture form for IFA referrals (monetisation lever).
+
+7. Technical Architecture & Stack
+7.1 Recommended Technology Stack
+
+7.2 Data Flow Architecture
+
+7.3 Security & Privacy
+No PII (name, PAN, Aadhaar) is collected in v1.0 — completely anonymous.
+All calculations run client-side. No financial data transmitted to servers in v1.
+HTTPS enforced. localStorage data encrypted with user-session key in v2 roadmap.
+Cookie consent banner compliant with IT Act 2000 and DPDP Act 2023.
+
+8. Non-Functional Requirements
+
+9. MVP Scope & Product Roadmap
+9.1 MVP (Version 1.0) — In Scope
+2-page data collection form with all fields specified in Sections 2 & 3.
+Financial Health Score (0–100) with gauge + radar chart.
+Expense breakdown donut chart + waterfall bar.
+FIRE Calculator with projection line chart and output cards.
+Dynamic SWOT Analysis (2×2 quadrant).
+PDF report download (client-side).
+Responsive design — mobile + desktop.
+
+9.2 Out of Scope for v1.0
+User accounts / login / history tracking.
+Tax planning module.
+Portfolio tracking / broker integration.
+AI chat assistant.
+Multi-currency / multi-language support.
+
+9.3 Roadmap
+
+10. Platform-Level SWOT — FinScore360
+This section analyses FinScore360 as a product/business — distinct from the per-user financial SWOT generated on the results page.
+
+
+11. Appendix — Glossary

@@ -1,0 +1,295 @@
+
+PRODUCT REQUIREMENTS DOCUMENT
+FinScore360
+
+Personal Financial Health & FIRE Planning Platform
+
+Document Version | v1.0
+Status | Draft – For Review
+Prepared By | Product Team
+Target Audience | Dev, Design, QA, Stakeholders
+Last Updated | Mon Apr 13 2026
+
+
+
+
+1. Executive Overview
+FinScore360 is a web-based personal financial consulting platform that guides users through a structured two-page data collection workflow, evaluates their financial health using a proprietary scoring algorithm, provides a personalised FIRE (Financial Independence, Retire Early) calculator, and presents a SWOT-style financial profile — all within a clean, interactive dashboard.
+
+1.1 Problem Statement
+Most Indians lack access to affordable financial advisory services. Existing tools are either too generic (basic budgeting apps) or too expensive (private wealth management). There is a significant gap for a platform that collects comprehensive income, expense, insurance, debt, and investment data, scores overall financial health, and helps users plan their path to financial independence.
+
+1.2 Product Goals
+Democratise financial analysis — free, instant, personalised insights for all income levels.
+Collect structured data across spending, protection, and wealth-building categories.
+Compute a meaningful Financial Health Score (0–100) with visual breakdown.
+Project a FIRE date and corpus requirement based on user inputs.
+Surface actionable SWOT analysis unique to the user's financial profile.
+
+1.3 Target Users
+Working professionals aged 25–55 with monthly income between ₹30,000 – ₹5,00,000.
+First-time financial planners who want a starting point.
+Individuals exploring early retirement or financial independence.
+Independent Financial Advisors (IFAs) who onboard clients digitally.
+
+1.4 Success Metrics
+KPI | Target (6 months) | Measurement Method
+Page 1 Completion Rate | ≥ 70% | Analytics funnel
+Full Submission Rate | ≥ 45% | Form completion event
+Score Dashboard Views | ≥ 80% of submissions | Page visit tracking
+FIRE Calculator Usage | ≥ 60% of scored users | Widget interaction
+Return Visit Rate (30-day) | ≥ 25% | Session analytics
+
+
+2. Data Collection — Page 1: Income & Monthly Expenses
+Page 1 is the entry point. It collects the user's income sources and all major recurring monthly expenses. The form is divided into two sub-sections: Income and Expenses. A live 'Monthly Surplus/Deficit' counter updates as the user types.
+
+2.1 Form Layout & UX Principles
+Single-column layout on mobile; two-column grid on desktop for expense fields.
+All currency inputs default to ₹ (INR). Localisation for USD / GBP may be added in v2.
+Inline contextual tooltips (ℹ️) explain each field with a one-line example.
+Progress bar at top showing 'Step 1 of 2 — Income & Expenses'.
+'Save & Continue' CTA is sticky at the bottom. Disabled until required fields are filled.
+Auto-save to localStorage every 15 seconds to prevent data loss.
+
+2.2 Input Fields Specification
+Field / Input Label | Input Type | Validation Rules | Notes
+Monthly Gross Income | Currency input (₹) | Required; > 0; max ₹1 Cr | Primary income only
+Other Income (rent, freelance, etc.) | Currency input (₹) | Optional; ≥ 0 | Passive / side income
+Rent / Housing Cost | Currency input (₹) | Required; ≥ 0 | 0 if self-owned
+Maid / Domestic Help | Currency input (₹) | Optional; ≥ 0 | Monthly total
+Food & Groceries | Currency input (₹) | Required; > 0 | Include dining out
+Total Loan EMI | Currency input (₹) | Required; ≥ 0 | All active EMIs combined
+Fuel & Transportation | Currency input (₹) | Required; ≥ 0 | Petrol, auto, Uber, etc.
+Entertainment & OTT | Currency input (₹) | Optional; ≥ 0 | Movies, subscriptions
+Medical Expenses (Out-of-pocket) | Currency input (₹) | Required; ≥ 0 | Non-insured expenses
+Internet & Mobile Bills | Currency input (₹) | Required; > 0 | Broadband + mobile
+Shopping & Clothing | Currency input (₹) | Optional; ≥ 0 | Monthly average
+Miscellaneous | Currency input (₹) | Optional; ≥ 0 | Any other expenses
+
+
+2.3 Derived Calculations on Page 1
+Live Computed Fields (displayed in real-time on the form)
+Total Monthly Income = Gross Income + Other Income Total Monthly Expenses = Sum of all expense fields entered so far Monthly Surplus / Deficit = Total Monthly Income − Total Monthly Expenses Savings Rate (%) = (Monthly Surplus / Total Monthly Income) × 100 Expense-to-Income Ratio (%) = (Total Expenses / Total Income) × 100
+
+
+2.4 Validation & Error Handling
+Required fields: Income, Rent, Food, Fuel, Medical, Internet, EMI — cannot proceed without these.
+If Total Expenses > Total Income: display amber warning banner, do NOT block submission.
+Numeric-only inputs — reject alphabets and special characters with inline red error text.
+Maximum field value cap: ₹99,99,999 per field to prevent data-entry mistakes.
+
+3. Data Collection — Page 2: Protection, Savings & Debt
+Page 2 collects insurance coverage details, emergency fund status, investment corpus, debt breakdown, and retirement planning parameters. This page feeds the FIRE Calculator and SWOT Analysis in addition to the Financial Health Score.
+
+3.1 Form Sections
+A) Protection Layer (Insurance)
+Collects health and life insurance details. The system cross-references the coverage amount with income to compute the 'Protection Score' sub-component.
+
+B) Emergency Fund & Savings
+Collects current liquid emergency reserves and total investment corpus. The system benchmarks emergency fund against monthly expenses (target: 6 months).
+
+C) Debt Details (Multi-Entry)
+Users can add up to 5 debt entries (home loan, car loan, personal loan, credit card, education). Each entry collects Principal, Interest Rate, and Tenure. The system computes Debt-to-Income Ratio and Total Interest Liability.
+
+D) FIRE Parameters
+Current age, target retirement age, desired monthly retirement income, expected ROI, and inflation rate. These feed exclusively into the FIRE Calculator.
+
+3.2 Input Fields Specification
+Field / Input Label | Input Type | Validation Rules | Notes
+Health Insurance Premium (Annual) | Currency input (₹) | Required; ≥ 0 | Self + family combined
+Health Insurance Coverage Amount | Currency input (₹) | Required if premium > 0 | Sum insured
+Term / Life Insurance Premium (Annual) | Currency input (₹) | Optional; ≥ 0 | Pure term preferred
+Life Cover Amount | Currency input (₹) | Required if premium > 0 | Death benefit
+Emergency Fund (Current Balance) | Currency input (₹) | Required; ≥ 0 | Liquid savings
+Monthly SIP / Investments | Currency input (₹) | Required; ≥ 0 | MF, stocks, NPS, PPF etc.
+Total Savings & Investments (Corpus) | Currency input (₹) | Required; ≥ 0 | Current accumulated value
+Debt — Principal Outstanding | Currency input (₹) | Optional; ≥ 0 per debt | Can add multiple debts
+Debt — Interest Rate (%) | Percentage input | Required if principal > 0; 0–36% | Annual rate
+Debt — Remaining Tenure (months) | Number input | Required if principal > 0 | Months left
+Expected Annual Return on Investment (%) | Percentage input | Required; 1–30% | Conservative estimate
+Current Age | Number input | Required; 18–70 years | For FIRE projection
+Target Retirement Age | Target Retirement Age | Required; > Current Age | FIRE target
+Desired Monthly Retirement Income (₹) | Currency input (₹) | Required; > 0 | In today's value
+Expected Annual Inflation Rate (%) | Percentage input | Default 6%; 1–15% | Used in FIRE calc
+
+
+3.3 Derived Calculations on Page 2
+Computed Fields for Scoring
+Emergency Fund Ratio = Emergency Fund / Monthly Expenses  (benchmark: ≥ 6) Life Insurance Adequacy = Life Cover / Annual Income  (benchmark: ≥ 10×) Debt-to-Income Ratio (DTI) = Total EMI / Monthly Gross Income  (benchmark: ≤ 35%) Net Worth = Total Savings + Investments − Total Outstanding Debt Investment Rate = Monthly SIP / Monthly Income  (benchmark: ≥ 20%) Total Interest Liability = Σ [P × r × (1+r)^n / ((1+r)^n−1)] × n − P  per debt
+
+
+4. Financial Health Score Engine
+After the user completes both pages and submits, the platform computes a Financial Health Score (FHS) on a scale of 0–100. The score is displayed on a results dashboard with a radial gauge chart and a radar chart showing six sub-component scores.
+
+4.1 Scoring Model — Components & Weights
+Metric | Score Band | Range / Benchmark | Weight (%) | Implication
+Savings Rate | 0–25 | < 10% = 0–8 10–20% = 9–16 ≥ 20% = 17–25 | 25% | Core wealth-building metric
+Expense Ratio | 0–20 | < 50% = 17–20 50–70% = 9–16 > 70% = 0–8 | 20% | Spending discipline
+Debt-to-Income (DTI) | 0–20 | < 20% = 17–20 20–35% = 9–16 > 35% = 0–8 | 20% | Debt burden indicator
+Emergency Fund | 0–15 | < 3 months = 0–5 3–6 months = 6–10 ≥ 6 months = 11–15 | 15% | Financial resilience
+Insurance Coverage | 0–10 | None = 0 Partial = 4–6 Adequate = 7–10 | 10% | Risk protection layer
+Investment Rate | 0–10 | < 5% = 0–3 5–15% = 4–7 ≥ 15% = 8–10 | 10% | Wealth accumulation pace
+
+
+4.2 Score Bands & Interpretation
+Score Range | Band Label | Color | Recommended Action
+80–100 | Financially Fit 💚 | Green (#1E8449) | Optimise & accelerate FIRE
+65–79 | Healthy 🟡 | Yellow (#D4AC0D) | Fine-tune 1–2 weak areas
+50–64 | Moderate 🟠 | Orange (#CA6F1E) | Address debt & savings gaps
+35–49 | At Risk 🔴 | Red (#C0392B) | Urgent debt & insurance review
+0–34 | Critical 🚨 | Dark Red (#7B241C) | Seek professional financial advice
+
+
+4.3 Charts & Visualisations
+Chart 1: Radial / Gauge Chart
+Large radial gauge displaying the overall FHS (0–100) with animated fill from 0 to the score on page load. Color interpolates from red to green based on band. Score number displayed in center with band label below.
+
+Chart 2: Radar / Spider Chart
+Six-axis radar chart mapping all scoring sub-components. Filled polygon in primary blue with opacity 0.4. Hover tooltip shows raw sub-score / max. Benchmark overlay (ideal profile at 100%) shown in dashed grey.
+
+Chart 3: Expense Breakdown Donut
+Donut chart showing proportional breakdown of all expense categories from Page 1. Interactive — click a segment to see the ₹ amount and % of income. Segments colour-coded by category type.
+
+Chart 4: Net Worth Waterfall Bar
+Horizontal bar showing: Total Income → Expenses → EMI → Savings → Net monthly surplus. Renders left-to-right with colour coding for deductions (red) and additions (green).
+
+5. FIRE Calculator
+The FIRE (Financial Independence, Retire Early) Calculator uses the user's retirement parameters from Page 2 to compute: the required retirement corpus, projected FIRE date, monthly investment required to hit the goal, and a year-by-year wealth accumulation chart.
+
+5.1 Core Formulas
+FIRE Computation Logic
+Step 1 — Inflation-Adjusted Monthly Expenses:   Future Monthly Need = Desired Monthly Income × (1 + Inflation Rate)^Years to Retirement  Step 2 — Required Retirement Corpus (25× Rule / Safe Withdrawal Rate):   FIRE Corpus = Future Monthly Need × 12 / Safe Withdrawal Rate (default 4%)  Step 3 — Projected Corpus at Retirement (Future Value):   FV = PV × (1 + r)^n + PMT × [((1 + r)^n − 1) / r]   Where: PV = current corpus, r = monthly ROI, n = months to retirement, PMT = monthly SIP  Step 4 — Shortfall / Surplus:   Gap = FIRE Corpus − Projected FV at Retirement  Step 5 — Additional Monthly SIP Required:   Required SIP = Gap / [((1 + r)^n − 1) / r]
+
+
+5.2 FIRE Calculator Output Cards
+Output Metric | Description | Visual Element
+FIRE Corpus Required | Total corpus needed to retire at target age | Large stat card — primary blue
+Projected Corpus at Retirement | What you'll accumulate at current SIP | Green if ≥ FIRE corpus, else red
+Corpus Shortfall / Surplus | Gap between need and projection | Progress bar — green/red fill
+FIRE Date (Earliest) | Age at which corpus target is achievable | Countdown widget + calendar icon
+Additional Monthly SIP Needed | Extra investment needed to close gap | Amber action card with CTA
+Total Interest Earned | Compounding gains over the period | Stat card — green
+
+
+5.3 FIRE Projection Chart
+An interactive line chart plots two trajectories year-by-year from current age to target retirement age:
+Line 1 (Current Path): Projected corpus growth at current SIP + existing corpus.
+Line 2 (FIRE Target): The required corpus value in each year (sloped to show target).
+The intersection point (if any) is highlighted as the 'Earliest FIRE Date'.
+A vertical dashed line at 'Target Retirement Age' is shown for reference.
+Hover tooltip shows year, projected corpus, FIRE target corpus, and gap/surplus.
+Slider to adjust SIP amount dynamically re-renders the chart in real time.
+
+6. Financial SWOT Analysis
+After scoring and the FIRE Calculator, the platform generates a personalised SWOT analysis. Unlike a generic report, each bullet is dynamically derived from the user's actual inputs and score sub-components. The SWOT is displayed in a 2×2 quadrant card layout.
+
+6.1 SWOT Generation Rules
+Quadrant | Trigger Condition | Example Output
+Strength | Savings Rate ≥ 20% | Your savings rate of X% is above the 20% benchmark — exceptional wealth-building discipline.
+Strength | Emergency Fund ≥ 6 months | You have X months of emergency buffer — strong resilience against income disruption.
+Strength | No high-interest debt (< 12%) | Your debt portfolio carries low interest rates — efficient liability management.
+Strength | Life cover ≥ 10× income | Adequate life insurance ensures your family is protected — well-structured protection layer.
+Weakness | EMI > 40% of income | Your EMI burden is X% of income, significantly above the safe 35% threshold.
+Weakness | Savings rate < 10% | Saving only X% monthly — below critical minimum; wealth accumulation is at risk.
+Weakness | No health insurance | No health coverage detected — a single hospitalisation could derail your finances.
+Weakness | Emergency fund < 3 months | Emergency fund covers only X months — vulnerable to sudden income shocks.
+Opportunity | High disposable income | A surplus of ₹X/month is available — increasing SIP by 20% could advance FIRE by Y years.
+Opportunity | Debt-free within 2 years | Clearing debt by [year] frees ₹X/month — redirect entirely into investments for compounding.
+Opportunity | Market exposure low | Low equity allocation — adding index funds could significantly improve long-term returns.
+Opportunity | Young age | At age X you have Y years to retirement — compounding works most powerfully in your favour.
+Threat | High inflation assumption | With 7% inflation, your ₹X retirement income will need ₹Y real value — underfunding risk.
+Threat | Single income source | Dependence on one income stream increases financial vulnerability.
+Threat | High DTI + job market risk | Your 45% DTI leaves minimal buffer if income drops due to layoffs or health issues.
+Threat | No term insurance | No life cover — your dependents face severe financial risk in case of untimely death.
+
+
+6.2 SWOT UI Design
+2×2 quadrant card layout: Strengths (top-left, green), Weaknesses (top-right, orange), Opportunities (bottom-left, blue), Threats (bottom-right, red).
+Each quadrant shows 2–5 dynamic bullet points derived from user data.
+'Download Report as PDF' button available below the SWOT section.
+'Share via WhatsApp / Email' CTA to share the score card (anonymised summary).
+'Consult a Financial Advisor' CTA linked to a lead-capture form for IFA referrals (monetisation lever).
+
+7. Technical Architecture & Stack
+7.1 Recommended Technology Stack
+Layer | Technology | Rationale
+Frontend Framework | React.js + TypeScript | Component reusability, type safety, large ecosystem
+UI Library | Tailwind CSS + shadcn/ui | Rapid design, accessible components
+Charts | Recharts + Chart.js | Radar, gauge, line, donut support
+State Management | Zustand | Lightweight, persistent across pages
+Form Management | React Hook Form + Zod | Validation schema + performance
+Backend / API | Node.js + Express (optional) | Future PDF generation, lead storage
+Database (optional) | Supabase (PostgreSQL) | For anonymous session storage + leads
+Hosting | Vercel / Netlify | Zero-config CI/CD, edge performance
+PDF Export | jsPDF + html2canvas | Client-side PDF generation of report
+
+
+7.2 Data Flow Architecture
+User Journey & Data Flow
+1. User lands on Page 1 → fills income & expense fields → data saved to Zustand store + localStorage. 2. User clicks 'Save & Continue' → validated → navigates to Page 2. 3. User fills insurance, savings, debt, FIRE parameters → validated on change. 4. User clicks 'Calculate My Score' → scoring engine runs client-side (pure JS functions). 5. Results Dashboard renders: FHS gauge, radar chart, expense donut, waterfall bar. 6. FIRE Calculator renders below: output cards + projection line chart with slider. 7. SWOT engine evaluates rule set against store data → renders 2×2 quadrant. 8. User optionally downloads PDF report or submits lead for IFA consultation.
+
+
+7.3 Security & Privacy
+No PII (name, PAN, Aadhaar) is collected in v1.0 — completely anonymous.
+All calculations run client-side. No financial data transmitted to servers in v1.
+HTTPS enforced. localStorage data encrypted with user-session key in v2 roadmap.
+Cookie consent banner compliant with IT Act 2000 and DPDP Act 2023.
+
+8. Non-Functional Requirements
+Category | Requirement | Acceptance Criteria
+Performance | Page load time | Lighthouse score ≥ 90; FCP < 1.5s; TTI < 3s on 4G
+Responsiveness | Mobile-first design | Fully functional on 320px–1920px viewports
+Accessibility | WCAG 2.1 AA | Screen reader compatible; keyboard navigable; contrast ratio ≥ 4.5:1
+Browser Support | Cross-browser | Chrome 110+, Firefox 110+, Safari 15+, Edge 110+
+Uptime | Availability | 99.5% uptime SLA; graceful degradation on CDN failure
+Localisation | Language | English + Tamil (v2); all currency in INR by default
+Score Accuracy | Calculation correctness | Unit test coverage ≥ 90% for scoring + FIRE formulas
+Offline Support | LocalStorage fallback | Form data persists if user closes tab and returns within 24 hours
+
+
+9. MVP Scope & Product Roadmap
+9.1 MVP (Version 1.0) — In Scope
+2-page data collection form with all fields specified in Sections 2 & 3.
+Financial Health Score (0–100) with gauge + radar chart.
+Expense breakdown donut chart + waterfall bar.
+FIRE Calculator with projection line chart and output cards.
+Dynamic SWOT Analysis (2×2 quadrant).
+PDF report download (client-side).
+Responsive design — mobile + desktop.
+
+9.2 Out of Scope for v1.0
+User accounts / login / history tracking.
+Tax planning module.
+Portfolio tracking / broker integration.
+AI chat assistant.
+Multi-currency / multi-language support.
+
+9.3 Roadmap
+Version | Timeline | Key Features
+v1.0 (MVP) | Month 1–3 | 2-page form, Financial Score, FIRE Calc, SWOT, PDF export
+v1.5 | Month 4–6 | User accounts, save & revisit history, email report, IFA lead form
+v2.0 | Month 7–10 | Tax optimizer, SIP goal tracker, multi-scenario FIRE modelling, Tamil language
+v3.0 | Month 11–18 | AI financial coach chatbot, mutual fund API integration, broker sync, mobile app
+
+
+10. Platform-Level SWOT — FinScore360
+This section analyses FinScore360 as a product/business — distinct from the per-user financial SWOT generated on the results page.
+
+💪 STRENGTHS • No-code, free, instant financial assessment — low barrier to adoption. • Proprietary scoring algorithm with transparent breakdown — builds trust. • Covers full financial spectrum: income, expenses, insurance, debt, investments, retirement. • FIRE Calculator differentiates from basic budgeting apps. • Client-side computation ensures data privacy with no server dependency. | ⚠️ WEAKNESSES • No user authentication in v1 — no retention or longitudinal tracking. • Scoring model not peer-reviewed by certified financial planners yet. • Single currency (INR) limits global reach in v1. • No integration with actual bank/broker data — relies entirely on self-reported inputs. • Manual data entry is time-consuming and susceptible to errors.
+🚀 OPPORTUNITIES • India's 500M+ internet users are vastly underserved by financial advisory tools. • SEBI's push for financial literacy creates a supportive regulatory environment. • IFA partnership model can generate B2B2C revenue from lead referrals. • Rising FIRE movement interest among millennials and Gen-Z in India. • WhatsApp sharing of score cards can drive organic viral distribution. | 🔴 THREATS • Competitors: ET Money, Groww, Zerodha Varsity, Paytm Money adding advisory features. • Regulatory risk: SEBI may classify automated financial advice under IA regulations. • Low-quality data input by users undermines score reliability. • User drop-off risk if form feels too long — competitor apps offer simpler flows. • Data privacy concerns may prevent users from sharing sensitive financial info.
+
+
+11. Appendix — Glossary
+Term | Definition
+FIRE | Financial Independence, Retire Early — a lifestyle movement aiming to achieve financial freedom before traditional retirement age.
+FHS | Financial Health Score — the composite 0–100 score computed by this platform.
+DTI | Debt-to-Income Ratio — total monthly EMI payments divided by gross monthly income.
+SIP | Systematic Investment Plan — a fixed monthly investment into mutual funds or similar instruments.
+SWOT | Strengths, Weaknesses, Opportunities, Threats — a structured framework for situational analysis.
+Safe Withdrawal Rate | The percentage (typically 4%) of a retirement corpus that can be withdrawn annually without depleting it over 30 years.
+Emergency Fund | Liquid savings reserved for sudden expenses or income disruption. Benchmark: 3–6 months of expenses.
+Net Worth | Total assets (savings + investments + property value) minus total liabilities (loans + credit card debt).
+PMT | Payment — the fixed periodic payment in an annuity formula.
+FV / PV | Future Value / Present Value — financial math concepts for time value of money.
+
